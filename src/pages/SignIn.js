@@ -11,18 +11,36 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebase';
 
 const theme = createTheme();
 
 export default function SignIn() {
+    const navigate = useNavigate();
+    const [value, setValue] = React.useState({
+        email: '',
+        password: '',
+    });
+    const [errorMsg, setErrorMsg] = React.useState('');
     const handleSubmit = (event) => {
         event.preventDefault();
-        const data = new FormData(event.currentTarget);
-        console.log({
-            email: data.get('email'),
-            password: data.get('password'),
-        });
+
+        if (!value.email || !value.password) {
+            setErrorMsg('Fill all fields.');
+            return;
+        }
+        setErrorMsg('');
+
+        signInWithEmailAndPassword(auth, value.email, value.password)
+            .then(() => {
+                navigate('/');
+            })
+            .catch((err) => {
+                console.log('err', err);
+                setErrorMsg(err.code);
+            });
     };
 
     return (
@@ -43,7 +61,12 @@ export default function SignIn() {
                     <Typography component="h1" variant="h5">
             Sign in
                     </Typography>
-                    <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+                    <Box
+                        component="form"
+                        onSubmit={handleSubmit}
+                        noValidate
+                        sx={{ mt: 1 }}
+                    >
                         <TextField
                             margin="normal"
                             required
@@ -53,6 +76,12 @@ export default function SignIn() {
                             name="email"
                             autoComplete="email"
                             autoFocus
+                            onChange={(e) => {
+                                setValue((prev) => ({
+                                    ...prev,
+                                    email: e.target.value.trim(),
+                                }));
+                            }}
                         />
                         <TextField
                             margin="normal"
@@ -63,7 +92,15 @@ export default function SignIn() {
                             type="password"
                             id="password"
                             autoComplete="current-password"
+                            onChange={(e) => {
+                                setValue((prev) => ({
+                                    ...prev,
+                                    password: e.target.value.trim(),
+                                }));
+                            }}
                         />
+                        <span style={{ color: 'red' }}>{errorMsg}</span>
+                        <br/>
                         <FormControlLabel
                             control={<Checkbox value="remember" color="primary" />}
                             label="Remember me"
@@ -77,10 +114,12 @@ export default function SignIn() {
               Sign In
                         </Button>
                         <Grid container>
-                            <Grid item xs>
-                            </Grid>
+                            <Grid item xs></Grid>
                             <Grid item>
-                                <NavLink to="/signUp" > {'Don\'t have an account? Sign Up'}</NavLink>
+                                <NavLink to="/signUp">
+                                    {' '}
+                                    {'Don\'t have an account? Sign Up'}
+                                </NavLink>
                             </Grid>
                         </Grid>
                     </Box>

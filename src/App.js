@@ -1,11 +1,17 @@
 import './App.css';
-// import Home from './components/Home';
 import { Route, Routes } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import SignUp from './pages/SignUp';
 import SignIn from './pages/SignIn';
+import { auth } from './firebase';
+import { useEffect } from 'react';
 
 function App() {
+    useEffect(() => {
+        auth.onAuthStateChanged((user) => {
+            console.log(user);
+        });
+    }, []);
     return (
         <div>
             <Routes>
