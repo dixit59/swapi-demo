@@ -109,7 +109,6 @@ export default function Film() {
         const response = await axios.get(
             `https://swapi.dev/api/films/?page=${pageVal}`
         );
-        console.log('response', response);
         setTableData(response.data.results);
         setCount(response.data.count);
         setNextButtonDisable(10 > count);

@@ -9,18 +9,15 @@ import People from '../pages/People';
 import Film from '../pages/Film';
 import PeopleView from '../pages/PeopleView';
 import FilmView from '../pages/FilmView';
+import PageNotFound from '../pages/PageNotFound';
 
 const RouteList = () => {
     const result = useSelector((state) => state.auth.loadUser);
     const location = useLocation();
     const navigate = useNavigate();
 
-    console.log('data',result);
-    console.log('location.pathname',location.pathname);
-
-    if (!result && (location.pathname === '/dashboard' || location.pathname === '/people' || location.pathname === '/film')) {
-        console.log('/ data');
-        return navigate('/signIn');
+    if (result === false && (location.pathname === '/dashboard' || location.pathname === '/people' || location.pathname === '/film')) {
+        return <SignIn/>;
     } else if (result && location.pathname === '/signIn') {
         return navigate('/dashboard');
     } else if (location.pathname === '' || location.pathname === '/') {
@@ -40,6 +37,7 @@ const RouteList = () => {
             <Route path="/film" element={<Film />} />
             <Route path="/people-view" element={<PeopleView />} />
             <Route path="/film-view" element={<FilmView />} />
+            <Route path="*" element={<PageNotFound />} />
 
         </Routes>
     );

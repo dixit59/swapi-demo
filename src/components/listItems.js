@@ -9,28 +9,49 @@ import { NavLink } from 'react-router-dom';
 
 export const mainListItems = (
     <React.Fragment>
-        <NavLink to='/dashboard'>
+        <NavLink to="/dashboard">
             <ListItemButton>
                 <ListItemIcon>
                     <DashboardIcon />
                 </ListItemIcon>
-                <ListItemText primary="Dashboard" />
+                <ListItemText
+                    primary="Dashboard"
+                    sx={{
+                        color: 'rgba(0, 0, 0, 0.87)',
+                        textDecoration: 'underline',
+                        textDecorationColor: 'white',
+                    }}
+                />
             </ListItemButton>
         </NavLink>
-        <NavLink to='/people'>
+        <NavLink to="/people">
             <ListItemButton>
                 <ListItemIcon>
                     <PeopleIcon />
                 </ListItemIcon>
-                <ListItemText primary="Peoples" />
+                <ListItemText
+                    primary="Peoples"
+                    sx={{
+                        color: 'rgba(0, 0, 0, 0.87)',
+                        textDecoration: 'underline',
+                        textDecorationColor: 'white',
+                    }}
+                />
             </ListItemButton>
         </NavLink>
-        <NavLink to='/film'>
+        <NavLink to="/film">
             <ListItemButton>
                 <ListItemIcon>
                     <LayersIcon />
                 </ListItemIcon>
-                <ListItemText primary="Films" />
+                <ListItemText
+                    primary="Films"
+                    sx={{
+                        color: 'rgba(0, 0, 0, 0.87)',
+                        textDecoration: 'underline',
+                        textDecorationColor: 'white',
+                    }}
+                />
             </ListItemButton>
         </NavLink>
     </React.Fragment>
