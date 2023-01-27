@@ -10,14 +10,11 @@ import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import Container from '@mui/material/Container';
-import Grid from '@mui/material/Grid';
-import Paper from '@mui/material/Paper';
+// import Grid from '@mui/material/Grid';
+// import Paper from '@mui/material/Paper';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import { mainListItems } from '../components/listItems';
-import Chart from '../components/Chart';
-import Deposits from '../components/Deposits';
-import Orders from '../components/Orders';
+import { mainListItems, secondaryListItems } from '../components/listItems';
 import logoImg from '../images/logo.png';
 import Button from '@mui/material/Button';
 import { signOut } from 'firebase/auth';
@@ -25,9 +22,44 @@ import { auth } from '../firebase';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser } from '../redux/actions/Auth';
+import Paper from '@mui/material/Paper';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TablePagination from '@mui/material/TablePagination';
+import TableRow from '@mui/material/TableRow';
+import axios from 'axios';
 
 const drawerWidth = 240;
+const columns = [
+    { id: 'name', label: 'Name', minWidth: 170 },
+    { id: 'gender', label: 'Gender', minWidth: 100 },
+    { id: 'height' ,label: 'Height', minWidth: 170},
+];
 
+// function createData(name, code, population, size) {
+//     const density = population / size;
+//     return { name, code, population, size, density };
+// }
+// const rows = [
+//     createData('India', 'IN', 1324171354, 3287263),
+//     createData('China', 'CN', 1403500365, 9596961),
+//     createData('Italy', 'IT', 60483973, 301340),
+//     createData('United States', 'US', 327167434, 9833520),
+//     createData('Canada', 'CA', 37602103, 9984670),
+//     createData('Australia', 'AU', 25475400, 7692024),
+//     createData('Germany', 'DE', 83019200, 357578),
+//     createData('Ireland', 'IE', 4857000, 70273),
+//     createData('Mexico', 'MX', 126577691, 1972550),
+//     createData('Japan', 'JP', 126317000, 377973),
+//     createData('France', 'FR', 67022000, 640679),
+//     createData('United Kingdom', 'GB', 67545757, 242495),
+//     createData('Russia', 'RU', 146793744, 17098246),
+//     createData('Nigeria', 'NG', 200962417, 923768),
+//     createData('Brazil', 'BR', 210147125, 8515767),
+// ];
 const AppBar = styled(MuiAppBar, {
     shouldForwardProp: (prop) => prop !== 'open',
 })(({ theme, open }) => ({
@@ -74,12 +106,17 @@ const Drawer = styled(MuiDrawer, {
 
 const mdTheme = createTheme();
 
-function DashboardContent() {
+export default function People() {
     const userData = useSelector((state) => state.auth.loadUser);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [open, setOpen] = React.useState(true);
+    const [page, setPage] = React.useState(0);
+    const [count, setCount] = React.useState(0);
+    // const [rowsPerPage, setRowsPerPage] = React.useState(10);
+    const [tableData, setTableData] = React.useState([]);
+
     const toggleDrawer = () => {
         setOpen(!open);
     };
@@ -93,6 +130,27 @@ function DashboardContent() {
                 console.log(error);
             });
     };
+    const fetchData = async (pageVal) => {
+        const response = await axios.get(
+            `https://swapi.dev/api/people/?page=${pageVal}`
+        );
+        console.log('response', response.data);
+        setTableData(response.data.results);
+        setCount(response.data.count);
+    };
+    React.useEffect(() => {
+        fetchData(1);
+    }, []);
+
+    const handleChangePage = (event, newPage) => {
+        fetchData(newPage+1);
+        setPage(newPage);
+    };
+
+    // const handleChangeRowsPerPage = (event) => {
+    //     setRowsPerPage(+event.target.value);
+    //     setPage(0);
+    // };
 
     return (
         <ThemeProvider theme={mdTheme}>
@@ -123,7 +181,7 @@ function DashboardContent() {
                             noWrap
                             sx={{ flexGrow: 1 }}
                         >
-              Dashboard
+              People
                         </Typography>
                         <Typography
                             component="h1"
@@ -156,6 +214,8 @@ function DashboardContent() {
                     <Divider />
                     <List component="nav">
                         {mainListItems}
+                        <Divider sx={{ my: 1 }} />
+                        {secondaryListItems}
                     </List>
                 </Drawer>
                 <Box
@@ -172,47 +232,65 @@ function DashboardContent() {
                 >
                     <Toolbar />
                     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-                        <Grid container spacing={3}>
-                            {/* Chart */}
-                            <Grid item xs={12} md={8} lg={9}>
-                                <Paper
-                                    sx={{
-                                        p: 2,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        height: 240,
-                                    }}
-                                >
-                                    <Chart />
-                                </Paper>
-                            </Grid>
-                            {/* Recent Deposits */}
-                            <Grid item xs={12} md={4} lg={3}>
-                                <Paper
-                                    sx={{
-                                        p: 2,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        height: 240,
-                                    }}
-                                >
-                                    <Deposits />
-                                </Paper>
-                            </Grid>
-                            {/* Recent Orders */}
-                            <Grid item xs={12}>
-                                <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                                    <Orders />
-                                </Paper>
-                            </Grid>
-                        </Grid>
+                        <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+                            <TableContainer sx={{ maxHeight: 440 }}>
+                                <Table stickyHeader aria-label="sticky table">
+                                    <TableHead>
+                                        <TableRow>
+                                            {columns.map((column) => (
+                                                <TableCell
+                                                    key={column.id}
+                                                    align={column.align}
+                                                    style={{ minWidth: column.minWidth }}
+                                                >
+                                                    {column.label}
+                                                </TableCell>
+                                            ))}
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {tableData
+                                            .slice(
+                                                page * 10,
+                                                page * 10 + 10
+                                            )
+                                            .map((row) => {
+                                                return (
+                                                    <TableRow
+                                                        hover
+                                                        role="checkbox"
+                                                        tabIndex={-1}
+                                                        key={row.code}
+                                                    >
+                                                        {columns.map((column) => {
+                                                            const value = row[column.id];
+                                                            return (
+                                                                <TableCell key={column.id} align={column.align}>
+                                                                    {column.format && typeof value === 'number'
+                                                                        ? column.format(value)
+                                                                        : value}
+                                                                </TableCell>
+                                                            );
+                                                        })}
+                                                    </TableRow>
+                                                );
+                                            })}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                            <TablePagination
+                                // rowsPerPageOptions={[10, 25, 100]}
+                                component="div"
+                                count={count}
+                                rowsPerPage={10}
+                                page={page}
+                                onPageChange={handleChangePage}
+                                // onRowsPerPageChange={handleChangeRowsPerPage}
+                            />
+                        </Paper>
                     </Container>
                 </Box>
             </Box>
         </ThemeProvider>
     );
-}
-
-export default function Dashboard() {
-    return <DashboardContent />;
 }

@@ -12,10 +12,13 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { auth } from '../firebase';
+import { useDispatch } from 'react-redux';
+import { setAuthUser } from '../redux/actions/Auth';
 
 const theme = createTheme();
 
 export default function SignUp() {
+    const dispatch = useDispatch();
     const navigate = useNavigate();
     const [value, setValue] = React.useState({
         fName: '',
@@ -34,11 +37,17 @@ export default function SignUp() {
         setErrorMsg('');
 
         createUserWithEmailAndPassword(auth, value.email, value.password)
-            .then(async(res) => {
-                await updateProfile(res.user,{
-                    displayName:`${value.fName} ${value.lName}`
+            .then(async (res) => {
+                await updateProfile(res.user, {
+                    displayName: `${value.fName} ${value.lName}`,
                 });
-                navigate('/');
+                navigate('/dashboard');
+                dispatch(
+                    setAuthUser({
+                        ...res.user.providerData?.[0],
+                        displayName: `${value.fName} ${value.lName}`,
+                    })
+                );
             })
             .catch((err) => {
                 console.log('err', err);

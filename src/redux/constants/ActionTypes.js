@@ -1,0 +1,2 @@
+export const UPDATE_LOAD_USER = 'UPDATE_LOAD_USER';
+export const LOGOUT_USER = 'LOGOUT_USER';

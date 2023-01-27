@@ -10,14 +10,11 @@ import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import Container from '@mui/material/Container';
-import Grid from '@mui/material/Grid';
-import Paper from '@mui/material/Paper';
+import TableCell, { tableCellClasses } from '@mui/material/TableCell';
+import ButtonGroup from '@mui/material/ButtonGroup';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { mainListItems } from '../components/listItems';
-import Chart from '../components/Chart';
-import Deposits from '../components/Deposits';
-import Orders from '../components/Orders';
 import logoImg from '../images/logo.png';
 import Button from '@mui/material/Button';
 import { signOut } from 'firebase/auth';
@@ -25,6 +22,13 @@ import { auth } from '../firebase';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser } from '../redux/actions/Auth';
+import Paper from '@mui/material/Paper';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import axios from 'axios';
 
 const drawerWidth = 240;
 
@@ -74,12 +78,19 @@ const Drawer = styled(MuiDrawer, {
 
 const mdTheme = createTheme();
 
-function DashboardContent() {
+export default function People() {
     const userData = useSelector((state) => state.auth.loadUser);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [open, setOpen] = React.useState(true);
+    const [count, setCount] = React.useState(0);
+    const [page, setPage] = React.useState(1);
+    // const [rowsPerPage, setRowsPerPage] = React.useState(10);
+    const [tableData, setTableData] = React.useState([]);
+    const [nextButtonDisable, setNextButtonDisable] = React.useState(false);
+    const [previousButtonDisable, setPreviousButtonDisable] = React.useState(true);
+
     const toggleDrawer = () => {
         setOpen(!open);
     };
@@ -93,7 +104,59 @@ function DashboardContent() {
                 console.log(error);
             });
     };
+    const fetchData = async (pageVal) => {
+        const response = await axios.get(
+            `https://swapi.dev/api/people/?page=${pageVal}`
+        );
+        setTableData(response.data.results);
+        setCount(response.data.count);
+    };
+    React.useEffect(() => {
+        fetchData(1);
+    }, []);
 
+    const StyledTableCell = styled(TableCell)(({ theme }) => ({
+        [`&.${tableCellClasses.head}`]: {
+            backgroundColor: theme.palette.common.black,
+            color: theme.palette.common.white,
+        },
+        [`&.${tableCellClasses.body}`]: {
+            fontSize: 14,
+        },
+    }));
+
+    const StyledTableRow = styled(TableRow)(({ theme }) => ({
+        '&:nth-of-type(odd)': {
+            backgroundColor: theme.palette.action.hover,
+        },
+        // hide last border
+        '&:last-child td, &:last-child th': {
+            border: 0,
+        },
+    }));
+
+    const paginateHandler = (val) => {
+        if(val == 'next'){
+            setPage(page+1);
+        }else{
+            setPage(page-1);
+        }
+        if(page == 1){
+            setPreviousButtonDisable(true);
+            setNextButtonDisable(false);
+        }else{
+            setPreviousButtonDisable(false);
+        }
+
+        fetchData(page);
+        if(page*10 > count ){
+            setNextButtonDisable(true);
+        }
+    };
+
+    const handleRequestView = (data) => {
+        navigate('/people-view', { state: { PeopleData: data } });
+    };
     return (
         <ThemeProvider theme={mdTheme}>
             <Box sx={{ display: 'flex' }}>
@@ -123,7 +186,7 @@ function DashboardContent() {
                             noWrap
                             sx={{ flexGrow: 1 }}
                         >
-              Dashboard
+              Peoples
                         </Typography>
                         <Typography
                             component="h1"
@@ -172,47 +235,51 @@ function DashboardContent() {
                 >
                     <Toolbar />
                     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-                        <Grid container spacing={3}>
-                            {/* Chart */}
-                            <Grid item xs={12} md={8} lg={9}>
-                                <Paper
-                                    sx={{
-                                        p: 2,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        height: 240,
-                                    }}
-                                >
-                                    <Chart />
-                                </Paper>
-                            </Grid>
-                            {/* Recent Deposits */}
-                            <Grid item xs={12} md={4} lg={3}>
-                                <Paper
-                                    sx={{
-                                        p: 2,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        height: 240,
-                                    }}
-                                >
-                                    <Deposits />
-                                </Paper>
-                            </Grid>
-                            {/* Recent Orders */}
-                            <Grid item xs={12}>
-                                <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                                    <Orders />
-                                </Paper>
-                            </Grid>
-                        </Grid>
+                        <TableContainer component={Paper}>
+                            <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                                <TableHead>
+                                    <TableRow>
+                                        <StyledTableCell>Name</StyledTableCell>
+                                        <StyledTableCell align="right">Gender</StyledTableCell>
+                                        <StyledTableCell align="right">Height</StyledTableCell>
+                                        <StyledTableCell align="center">Action</StyledTableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {tableData.map((row,i) => (
+                                        <StyledTableRow key={i}>
+                                            <StyledTableCell component="th" scope="row">
+                                                {row.name}
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                {row.gender}
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                {row.height}
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                <Button
+                                                    variant="outlined"
+                                                    onClick={() => handleRequestView(row)}
+                                                > View Details </Button>
+                                            </StyledTableCell>
+                                        </StyledTableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                        <br/>
+                        <ButtonGroup
+                            disableElevation
+                            variant="contained"
+                            aria-label="Disabled elevation buttons"
+                        >
+                            <Button disabled={previousButtonDisable} onClick={()=>paginateHandler('previous')}>previous</Button>
+                            <Button disabled={nextButtonDisable} onClick={()=>paginateHandler('next')}>next</Button>
+                        </ButtonGroup>
                     </Container>
                 </Box>
             </Box>
         </ThemeProvider>
     );
-}
-
-export default function Dashboard() {
-    return <DashboardContent />;
 }

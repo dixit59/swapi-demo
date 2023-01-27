@@ -14,10 +14,13 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase';
+import { useDispatch } from 'react-redux';
+import { setAuthUser } from '../redux/actions/Auth';
 
 const theme = createTheme();
 
 export default function SignIn() {
+    const dispatch = useDispatch();
     const navigate = useNavigate();
     const [value, setValue] = React.useState({
         email: '',
@@ -34,8 +37,9 @@ export default function SignIn() {
         setErrorMsg('');
 
         signInWithEmailAndPassword(auth, value.email, value.password)
-            .then(() => {
-                navigate('/');
+            .then((res) => {
+                navigate('/dashboard');
+                dispatch(setAuthUser(res.user.providerData?.[0]));
             })
             .catch((err) => {
                 console.log('err', err);

@@ -10,14 +10,9 @@ import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import Container from '@mui/material/Container';
-import Grid from '@mui/material/Grid';
-import Paper from '@mui/material/Paper';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { mainListItems } from '../components/listItems';
-import Chart from '../components/Chart';
-import Deposits from '../components/Deposits';
-import Orders from '../components/Orders';
 import logoImg from '../images/logo.png';
 import Button from '@mui/material/Button';
 import { signOut } from 'firebase/auth';
@@ -25,6 +20,9 @@ import { auth } from '../firebase';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser } from '../redux/actions/Auth';
+import { Card, ListItem, ListItemText } from '@mui/material';
+import { useLocation } from 'react-router-dom';
+import moment from 'moment';
 
 const drawerWidth = 240;
 
@@ -74,12 +72,20 @@ const Drawer = styled(MuiDrawer, {
 
 const mdTheme = createTheme();
 
-function DashboardContent() {
+export default function FilmView() {
     const userData = useSelector((state) => state.auth.loadUser);
+    const { state } = useLocation();
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [open, setOpen] = React.useState(true);
+    const [filmData, setFilmData] = React.useState();
+
+    React.useEffect(() => {
+        setFilmData(state.FilmData);
+    }, [state]);
+
+
     const toggleDrawer = () => {
         setOpen(!open);
     };
@@ -123,7 +129,7 @@ function DashboardContent() {
                             noWrap
                             sx={{ flexGrow: 1 }}
                         >
-              Dashboard
+              Film
                         </Typography>
                         <Typography
                             component="h1"
@@ -154,9 +160,7 @@ function DashboardContent() {
                         </IconButton>
                     </Toolbar>
                     <Divider />
-                    <List component="nav">
-                        {mainListItems}
-                    </List>
+                    <List component="nav">{mainListItems}</List>
                 </Drawer>
                 <Box
                     component="main"
@@ -172,47 +176,34 @@ function DashboardContent() {
                 >
                     <Toolbar />
                     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-                        <Grid container spacing={3}>
-                            {/* Chart */}
-                            <Grid item xs={12} md={8} lg={9}>
-                                <Paper
-                                    sx={{
-                                        p: 2,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        height: 240,
-                                    }}
-                                >
-                                    <Chart />
-                                </Paper>
-                            </Grid>
-                            {/* Recent Deposits */}
-                            <Grid item xs={12} md={4} lg={3}>
-                                <Paper
-                                    sx={{
-                                        p: 2,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        height: 240,
-                                    }}
-                                >
-                                    <Deposits />
-                                </Paper>
-                            </Grid>
-                            {/* Recent Orders */}
-                            <Grid item xs={12}>
-                                <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                                    <Orders />
-                                </Paper>
-                            </Grid>
-                        </Grid>
+                        <h4 className="app_text_16_semibold ps-3 mt-4">Film Details</h4>
+                        <Card className='shadow border border-1'>
+                            <List>
+                                <ListItem>
+                                    <ListItemText sx={{ flex: '0 0 120px' }}>Title</ListItemText>
+                                    <ListItemText sx={{ flex: '1 0 auto' }}>{filmData?.title}</ListItemText>
+                                </ListItem>
+                                <ListItem>
+                                    <ListItemText sx={{ flex: '0 0 120px' }}>Director</ListItemText>
+                                    <ListItemText sx={{ flex: '1 0 auto' }}>{filmData?.director}</ListItemText>
+                                </ListItem>
+                                <ListItem>
+                                    <ListItemText sx={{ flex: '0 0 120px' }}>Producer </ListItemText>
+                                    <ListItemText sx={{ flex: '1 0 auto' }}>{filmData?.producer}</ListItemText>
+                                </ListItem>
+                                <ListItem>
+                                    <ListItemText sx={{ flex: '0 0 120px' }}>Release Date </ListItemText>
+                                    <ListItemText sx={{ flex: '1 0 auto' }}>{moment(filmData?.release_date).format('MMM DD YYYY h:mm A')}</ListItemText>
+                                </ListItem>
+                                <ListItem>
+                                    <ListItemText sx={{ flex: '0 0 120px' }}>Episode Id </ListItemText>
+                                    <ListItemText sx={{ flex: '1 0 auto' }}>{filmData?.episode_id}</ListItemText>
+                                </ListItem>
+                            </List>
+                        </Card>
                     </Container>
                 </Box>
             </Box>
         </ThemeProvider>
     );
-}
-
-export default function Dashboard() {
-    return <DashboardContent />;
 }
