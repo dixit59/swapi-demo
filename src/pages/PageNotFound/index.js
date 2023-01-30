@@ -1,4 +1,4 @@
-import '../../PageNotFound.css';
+import './PageNotFound.css';
 import * as React from 'react';
 import { NavLink } from 'react-router-dom';
 
