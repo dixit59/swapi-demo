@@ -16,17 +16,19 @@ const RouteList = () => {
     const location = useLocation();
     const navigate = useNavigate();
 
-    if (result === false && (location.pathname === '/dashboard' || location.pathname === '/people' || location.pathname === '/film')) {
-        return <SignIn/>;
-    } else if (result && location.pathname === '/signIn') {
-        return navigate('/dashboard');
-    } else if (location.pathname === '' || location.pathname === '/') {
-        if(result){
-            return navigate('/dashboard');
-        }else{
+    React.useEffect(() => {
+        if (result === false && (location.pathname === '/dashboard' ||location.pathname === '/people' ||location.pathname === '/film')) {
             return navigate('/signIn');
+        } else if (result && location.pathname === '/signIn') {
+            return navigate('/dashboard');
+        } else if (location.pathname === '' || location.pathname === '/') {
+            if (result) {
+                return navigate('/dashboard');
+            } else {
+                return navigate('/signIn');
+            }
         }
-    }
+    }, [location,result]);
 
     return (
         <Routes>
@@ -38,7 +40,6 @@ const RouteList = () => {
             <Route path="/people-view" element={<PeopleView />} />
             <Route path="/film-view" element={<FilmView />} />
             <Route path="*" element={<PageNotFound />} />
-
         </Routes>
     );
 };
