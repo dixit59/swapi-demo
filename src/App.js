@@ -4,6 +4,9 @@ import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { setAuthUser } from './redux/actions/Auth';
 import RouteList from './routes';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+
+const mdTheme = createTheme();
 
 function App() {
     const dispatch = useDispatch();
@@ -15,9 +18,9 @@ function App() {
     }, []);
 
     return (
-        <div>
+        <ThemeProvider theme={mdTheme}>
             <RouteList />
-        </div>
+        </ThemeProvider>
     );
 }
 

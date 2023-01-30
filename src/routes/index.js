@@ -1,15 +1,8 @@
 import React from 'react';
 import { Route, Routes, useNavigate, useLocation } from 'react-router-dom';
-
-import SignIn from '../pages/SignIn';
-import SignUp from '../pages/SignUp';
-import Dashboard from '../pages/Dashboard';
+import { Dashboard, Film, FilmView, PageNotFound, People, PeopleView, SignIn, SignUp } from '../pages';
 import { useSelector } from 'react-redux';
-import People from '../pages/People';
-import Film from '../pages/Film';
-import PeopleView from '../pages/PeopleView';
-import FilmView from '../pages/FilmView';
-import PageNotFound from '../pages/PageNotFound';
+import PrivateRoute from './PrivateRoute';
 
 const RouteList = () => {
     const result = useSelector((state) => state.auth.loadUser);
@@ -17,9 +10,7 @@ const RouteList = () => {
     const navigate = useNavigate();
 
     React.useEffect(() => {
-        if (result === false && (location.pathname === '/dashboard' ||location.pathname === '/people' ||location.pathname === '/film')) {
-            return navigate('/signIn');
-        } else if (result && location.pathname === '/signIn') {
+        if (result && location.pathname === '/signIn') {
             return navigate('/dashboard');
         } else if (location.pathname === '' || location.pathname === '/') {
             if (result) {
@@ -32,14 +23,14 @@ const RouteList = () => {
 
     return (
         <Routes>
-            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
             <Route path="/signIn" element={<SignIn />} />
             <Route path="/signUp" element={<SignUp />} />
-            <Route path="/people" element={<People />} />
-            <Route path="/film" element={<Film />} />
-            <Route path="/people-view" element={<PeopleView />} />
-            <Route path="/film-view" element={<FilmView />} />
-            <Route path="*" element={<PageNotFound />} />
+            <Route path="/people" element={<PrivateRoute><People /></PrivateRoute>} />
+            <Route path="/film" element={<PrivateRoute><Film /></PrivateRoute>} />
+            <Route path="/people-view" element={<PrivateRoute><PeopleView /></PrivateRoute>} />
+            <Route path="/film-view" element={<PrivateRoute><FilmView /></PrivateRoute>} />
+            <Route path="*" element={<PrivateRoute><PageNotFound /></PrivateRoute>} />
         </Routes>
     );
 };
