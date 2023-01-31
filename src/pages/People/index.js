@@ -19,6 +19,7 @@ export default function People() {
     const navigate = useNavigate();
     const [count, setCount] = React.useState(0);
     const [page, setPage] = React.useState(1);
+    const [loader, setLoader] = React.useState(true);
     const [tableData, setTableData] = React.useState([]);
     const [nextButtonDisable, setNextButtonDisable] = React.useState(false);
     const [previousButtonDisable, setPreviousButtonDisable] =
@@ -30,6 +31,7 @@ export default function People() {
         );
         setTableData(response.data.results);
         setCount(response.data.count);
+        setLoader(false);
     };
     React.useEffect(() => {
         fetchData(1);
@@ -79,57 +81,67 @@ export default function People() {
     };
     return (
         <MainLayout title="Peoples">
-            <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 700 }} aria-label="customized table">
-                    <TableHead>
-                        <TableRow>
-                            <StyledTableCell>Name</StyledTableCell>
-                            <StyledTableCell align="right">Gender</StyledTableCell>
-                            <StyledTableCell align="right">Height</StyledTableCell>
-                            <StyledTableCell align="center">Action</StyledTableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {tableData.map((row, i) => (
-                            <StyledTableRow key={i}>
-                                <StyledTableCell component="th" scope="row">
-                                    {row.name}
-                                </StyledTableCell>
-                                <StyledTableCell align="right">{row.gender}</StyledTableCell>
-                                <StyledTableCell align="right">{row.height}</StyledTableCell>
-                                <StyledTableCell align="right">
-                                    <Button
-                                        variant="outlined"
-                                        onClick={() => handleRequestView(row)}
-                                    >
-                                        {' '}
-                    View Details{' '}
-                                    </Button>
-                                </StyledTableCell>
-                            </StyledTableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-            <br />
-            <ButtonGroup
-                disableElevation
-                variant="contained"
-                aria-label="Disabled elevation buttons"
-            >
-                <Button
-                    disabled={previousButtonDisable}
-                    onClick={() => paginateHandler('previous')}
-                >
-          previous
-                </Button>
-                <Button
-                    disabled={nextButtonDisable}
-                    onClick={() => paginateHandler('next')}
-                >
-          next
-                </Button>
-            </ButtonGroup>
+            {loader ? (
+                <div className="loader"></div>
+            ) : (
+                <>
+                    <TableContainer component={Paper}>
+                        <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                            <TableHead>
+                                <TableRow>
+                                    <StyledTableCell>Name</StyledTableCell>
+                                    <StyledTableCell align="right">Gender</StyledTableCell>
+                                    <StyledTableCell align="right">Height</StyledTableCell>
+                                    <StyledTableCell align="center">Action</StyledTableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {tableData.map((row, i) => (
+                                    <StyledTableRow key={i}>
+                                        <StyledTableCell component="th" scope="row">
+                                            {row.name}
+                                        </StyledTableCell>
+                                        <StyledTableCell align="right">
+                                            {row.gender}
+                                        </StyledTableCell>
+                                        <StyledTableCell align="right">
+                                            {row.height}
+                                        </StyledTableCell>
+                                        <StyledTableCell align="right">
+                                            <Button
+                                                variant="outlined"
+                                                onClick={() => handleRequestView(row)}
+                                            >
+                                                {' '}
+                        View Details{' '}
+                                            </Button>
+                                        </StyledTableCell>
+                                    </StyledTableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                    <br />
+                    <ButtonGroup
+                        disableElevation
+                        variant="contained"
+                        aria-label="Disabled elevation buttons"
+                    >
+                        <Button
+                            disabled={previousButtonDisable}
+                            onClick={() => paginateHandler('previous')}
+                        >
+              previous
+                        </Button>
+                        <Button
+                            disabled={nextButtonDisable}
+                            onClick={() => paginateHandler('next')}
+                        >
+              next
+                        </Button>
+                    </ButtonGroup>
+                </>
+            )}
         </MainLayout>
     );
 }

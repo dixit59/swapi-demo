@@ -20,6 +20,7 @@ export default function Film() {
     const navigate = useNavigate();
     const [count, setCount] = React.useState(0);
     const [page, setPage] = React.useState(1);
+    const [loader, setLoader] = React.useState(true);
     const [tableData, setTableData] = React.useState([]);
     const [nextButtonDisable, setNextButtonDisable] = React.useState(true);
     const [previousButtonDisable, setPreviousButtonDisable] =
@@ -32,6 +33,7 @@ export default function Film() {
         setTableData(response.data.results);
         setCount(response.data.count);
         setNextButtonDisable(10 > count);
+        setLoader(false);
     };
     React.useEffect(() => {
         fetchData(1);
@@ -80,59 +82,67 @@ export default function Film() {
     };
     return (
         <MainLayout title="Films">
-            <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 700 }} aria-label="customized table">
-                    <TableHead>
-                        <TableRow>
-                            <StyledTableCell>Title</StyledTableCell>
-                            <StyledTableCell align="right">Director</StyledTableCell>
-                            <StyledTableCell align="right">Release Date</StyledTableCell>
-                            <StyledTableCell align="center">Action</StyledTableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {tableData.map((row, i) => (
-                            <StyledTableRow key={i}>
-                                <StyledTableCell component="th" scope="row">
-                                    {row.title}
-                                </StyledTableCell>
-                                <StyledTableCell align="right">{row.director}</StyledTableCell>
-                                <StyledTableCell align="right">
-                                    {moment(row.release_date).format('MMM DD YYYY h:mm A')}
-                                </StyledTableCell>
-                                <StyledTableCell align="right">
-                                    <Button
-                                        variant="outlined"
-                                        onClick={() => handleRequestView(row)}
-                                    >
-                                        {' '}
-                    View Details{' '}
-                                    </Button>
-                                </StyledTableCell>
-                            </StyledTableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-            <br />
-            <ButtonGroup
-                disableElevation
-                variant="contained"
-                aria-label="Disabled elevation buttons"
-            >
-                <Button
-                    disabled={previousButtonDisable}
-                    onClick={() => paginateHandler('previous')}
-                >
-          previous
-                </Button>
-                <Button
-                    disabled={nextButtonDisable}
-                    onClick={() => paginateHandler('next')}
-                >
-          next
-                </Button>
-            </ButtonGroup>
+            {loader ? (
+                <div className="loader"></div>
+            ) : (
+                <>
+                    <TableContainer component={Paper}>
+                        <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                            <TableHead>
+                                <TableRow>
+                                    <StyledTableCell>Title</StyledTableCell>
+                                    <StyledTableCell align="right">Director</StyledTableCell>
+                                    <StyledTableCell align="right">Release Date</StyledTableCell>
+                                    <StyledTableCell align="center">Action</StyledTableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {tableData.map((row, i) => (
+                                    <StyledTableRow key={i}>
+                                        <StyledTableCell component="th" scope="row">
+                                            {row.title}
+                                        </StyledTableCell>
+                                        <StyledTableCell align="right">
+                                            {row.director}
+                                        </StyledTableCell>
+                                        <StyledTableCell align="right">
+                                            {moment(row.release_date).format('MMM DD YYYY h:mm A')}
+                                        </StyledTableCell>
+                                        <StyledTableCell align="right">
+                                            <Button
+                                                variant="outlined"
+                                                onClick={() => handleRequestView(row)}
+                                            >
+                                                {' '}
+                        View Details{' '}
+                                            </Button>
+                                        </StyledTableCell>
+                                    </StyledTableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                    <br />
+                    <ButtonGroup
+                        disableElevation
+                        variant="contained"
+                        aria-label="Disabled elevation buttons"
+                    >
+                        <Button
+                            disabled={previousButtonDisable}
+                            onClick={() => paginateHandler('previous')}
+                        >
+              previous
+                        </Button>
+                        <Button
+                            disabled={nextButtonDisable}
+                            onClick={() => paginateHandler('next')}
+                        >
+              next
+                        </Button>
+                    </ButtonGroup>
+                </>
+            )}
         </MainLayout>
     );
 }
