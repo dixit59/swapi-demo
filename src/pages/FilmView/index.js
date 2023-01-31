@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
 import { List, Card, ListItem, ListItemText } from '@mui/material';
 import { MainLayout } from '../../components';
 import { useLocation } from 'react-router-dom';
@@ -6,9 +6,9 @@ import moment from 'moment';
 
 export default function FilmView() {
     const { state } = useLocation();
-    const [filmData, setFilmData] = React.useState();
+    const [filmData, setFilmData] = useState();
 
-    React.useEffect(() => {
+    useEffect(() => {
         setFilmData(state.FilmData);
     }, [state]);
 

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import {
     Paper,
@@ -18,13 +18,13 @@ import { MainLayout } from '../../components';
 
 export default function Film() {
     const navigate = useNavigate();
-    const [count, setCount] = React.useState(0);
-    const [page, setPage] = React.useState(1);
-    const [loader, setLoader] = React.useState(true);
-    const [tableData, setTableData] = React.useState([]);
-    const [nextButtonDisable, setNextButtonDisable] = React.useState(true);
+    const [count, setCount] = useState(0);
+    const [page, setPage] = useState(1);
+    const [loader, setLoader] = useState(true);
+    const [tableData, setTableData] = useState([]);
+    const [nextButtonDisable, setNextButtonDisable] = useState(true);
     const [previousButtonDisable, setPreviousButtonDisable] =
-    React.useState(true);
+    useState(true);
 
     const fetchData = async (pageVal) => {
         const response = await axios.get(
@@ -35,7 +35,7 @@ export default function Film() {
         setNextButtonDisable(10 > count);
         setLoader(false);
     };
-    React.useEffect(() => {
+    useEffect(() => {
         fetchData(1);
     }, []);
 

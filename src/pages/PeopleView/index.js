@@ -1,13 +1,13 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
 import { List, Card, ListItem, ListItemText } from '@mui/material';
 import { MainLayout } from '../../components';
 import { useLocation } from 'react-router-dom';
 
 export default function PeopleView() {
     const { state } = useLocation();
-    const [peopleData, setPeopleData] = React.useState();
+    const [peopleData, setPeopleData] = useState();
 
-    React.useEffect(() => {
+    useEffect(() => {
         setPeopleData(state.PeopleData);
     }, [state]);
 

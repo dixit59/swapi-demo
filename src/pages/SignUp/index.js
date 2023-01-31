@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import { Avatar, Button, CssBaseline, TextField, Grid, Box, Typography, Container } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { NavLink, useNavigate } from 'react-router-dom';
@@ -10,13 +10,13 @@ import { setAuthUser } from '../../redux/actions/Auth';
 export default function SignUp() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const [value, setValue] = React.useState({
+    const [value, setValue] = useState({
         fName: '',
         lName: '',
         email: '',
         password: '',
     });
-    const [errorMsg, setErrorMsg] = React.useState('');
+    const [errorMsg, setErrorMsg] = useState('');
 
     const handleSubmit = (event) => {
         event.preventDefault();

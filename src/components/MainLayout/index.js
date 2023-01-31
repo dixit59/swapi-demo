@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import { styled } from '@mui/material/styles';
 import {
     CssBaseline,
@@ -75,7 +75,7 @@ function MainLayout(props) {
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const [open, setOpen] = React.useState(true);
+    const [open, setOpen] = useState(true);
     const toggleDrawer = () => {
         setOpen(!open);
     };

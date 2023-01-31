@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Route, Routes, useNavigate, useLocation } from 'react-router-dom';
 import { Dashboard, Film, FilmView, PageNotFound, People, PeopleView, SignIn, SignUp } from '../pages';
 import { useSelector } from 'react-redux';
@@ -9,7 +9,7 @@ const RouteList = () => {
     const location = useLocation();
     const navigate = useNavigate();
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (result && location.pathname === '/signIn') {
             return navigate('/dashboard');
         } else if (location.pathname === '' || location.pathname === '/') {
